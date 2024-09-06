@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.86"
+clap = { version = "4.5.17", features = ["cargo"]}
 directories = "5.0.1"
 serde = { version = "1.0.209", features = ["derive"]}
 toml = "0.8.19"
