@@ -1,3 +1,4 @@
+mod cli;
 mod config;
 
 fn main() {
