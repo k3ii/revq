@@ -26,4 +26,13 @@ fn main() {
         }
     };
 
+    match response {
+        Ok(json) => {
+            let formatted = serde_json::to_string_pretty(&json).unwrap();
+            println!("response:\n{}", formatted);
+        }
+        Err(e) => {
+            eprint!("Error fetching PRs: {:?}", e);
+        }
+    }
 }
