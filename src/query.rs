@@ -3,7 +3,7 @@ pub fn build_query(username: Option<&str>, config: &crate::config::Config) -> St
         Some(user) => format!(
             r#"
         {{
-            search(query: "is:pr is:open author:{user}", type: ISSUE, first 100) {{
+            search(query: "is:pr is:open author:{user}", type: ISSUE, first: 100) {{
                 edges {{
                     node {{
                     ... on PullRequest {{
@@ -23,7 +23,7 @@ pub fn build_query(username: Option<&str>, config: &crate::config::Config) -> St
         None => format!(
             r#"
         {{
-            search(query: "is:pr is:open author:@me user:{username}", type: ISSUE, first 100) {{
+            search(query: "is:pr is:open author:@me user:{username}", type: ISSUE, first: 100) {{
                 edges {{
                     node {{
                     ... on PullRequest {{
