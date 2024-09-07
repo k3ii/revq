@@ -8,7 +8,8 @@ use crate::github::fetch_prs;
 use crate::query::build_query;
 use octocrab::Octocrab;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let matches = cli::cli().get_matches();
     let config = Config::load().expect("Failed to load config");
 
@@ -25,6 +26,8 @@ fn main() {
             return;
         }
     };
+
+    let response = fetch_prs(&octocrab, &query).await;
 
     match response {
         Ok(json) => {
