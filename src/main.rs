@@ -17,7 +17,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = Config::load().expect("Failed to load config");
 
     let username = matches.get_one::<String>("username").map(|s| s.as_str());
-    let query = build_query(username, &config);
+    let use_org = matches.get_flag("org") || config.organization_settings.always;
+    let use_req = matches.get_flag("req");
+
+    let query = build_query(username, &config, use_org, use_req);
 
     let octocrab = Octocrab::builder()
         .personal_token(config.token.clone())
