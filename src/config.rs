@@ -19,7 +19,7 @@ pub struct OrganizationSettings {
 impl Config {
     pub fn load() -> Result<Self> {
         let base_dir = BaseDirs::new().context("Failed to get base directories")?;
-        let config_path = base_dir.config_dir().join("revq/revq.toml");
+        let config_path = base_dir.config_dir().join("revq/config.toml");
         let config = std::fs::read_to_string(config_path.clone())
             .with_context(|| format!("Failed to read config file at {:?}", config_path))?;
         let config: Config = toml::from_str(&config).context("Failed to parse config file")?;

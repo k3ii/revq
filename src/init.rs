@@ -43,7 +43,7 @@ fn save_to_xdg_config(content: &str) -> std::io::Result<PathBuf> {
     });
 
     if let Some(base_dirs) = BaseDirs::new() {
-        let config_dir = base_dirs.config_dir().join("testrevq");
+        let config_dir = base_dirs.config_dir().join("revq");
 
         fs::create_dir_all(&config_dir)?;
         let config_file = config_dir.join("config.toml");
