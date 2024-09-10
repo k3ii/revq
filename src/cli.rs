@@ -1,8 +1,16 @@
+use clap::builder::styling;
 use clap::{Arg, Command};
+
+const STYLES: styling::Styles = styling::Styles::styled()
+    .header(styling::AnsiColor::Green.on_default().bold())
+    .usage(styling::AnsiColor::Green.on_default().bold())
+    .literal(styling::AnsiColor::Blue.on_default().bold())
+    .placeholder(styling::AnsiColor::Cyan.on_default());
 
 pub fn cli() -> Command {
     Command::new("revq")
         .version("0.1.0")
+        .styles(STYLES)
         .arg(
             Arg::new("username")
                 .short('u')
