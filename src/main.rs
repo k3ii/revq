@@ -1,19 +1,26 @@
 mod cli;
 mod config;
 mod github;
+mod init;
 mod pr;
 mod query;
 
 use crate::config::Config;
 use crate::github::fetch_prs;
+use crate::init::init;
 use crate::pr::{build_pr_list, select_pr};
 use crate::query::build_query;
 use octocrab::Octocrab;
+use std::process::exit;
 use webbrowser;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let matches = cli::cli().get_matches();
+    if matches.subcommand_matches("init").is_some() {
+        init();
+        exit(0);
+    }
     let config = Config::load().expect("Failed to load config");
 
     let username = matches.get_one::<String>("username").map(|s| s.as_str());

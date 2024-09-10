@@ -5,7 +5,7 @@ pub fn build_query(
     use_req: bool,
 ) -> String {
     if use_org {
-        match &config.organization {
+        match &config.organization_settings.organization {
             Some(org) => {
                 let base_query = format!(
                     r#"
