@@ -6,13 +6,13 @@ use serde::{Deserialize, Serialize};
 pub struct Config {
     pub username: String,
     pub token: String,
-    pub organization: Option<String>,
     #[serde(default)]
     pub organization_settings: OrganizationSettings,
 }
 
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct OrganizationSettings {
+    pub organization: Option<String>,
     pub always: bool,
 }
 
