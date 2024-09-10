@@ -34,4 +34,9 @@ pub fn cli() -> Command {
                 .help("Show PRs where review is requested")
                 .action(clap::ArgAction::SetTrue),
         )
+        .subcommand(
+            Command::new("init")
+                .about("Initialize configuration file")
+                .after_help("revq init should run only once."),
+        )
 }
