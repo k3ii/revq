@@ -30,6 +30,7 @@ pub fn cli() -> Command {
             Arg::new("req")
                 .short('r')
                 .long("req")
+                .aliases(["review", "requested", "review-requested"])
                 .help("Show PRs where review is requested")
                 .action(clap::ArgAction::SetTrue),
         )
