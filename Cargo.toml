@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.86"
 clap = { version = "4.5.17", features = ["cargo", "color"] }
+colored = "2.1.0"
 directories = "5.0.1"
 inquire = "0.7.5"
 octocrab = "0.39.0"
