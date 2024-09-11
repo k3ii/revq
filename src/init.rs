@@ -1,4 +1,5 @@
 use anyhow::{Context, Result};
+use colored::*;
 use directories::BaseDirs;
 use inquire::{Confirm, Text};
 use serde::Serialize;
@@ -28,7 +29,7 @@ fn show_spinner() {
 
     for _ in 0..3 {
         for &char in &spinner_chars {
-            print!("\r{}", char);
+            print!("\r{}", char.blue().bold());
             std::io::stdout().flush().expect("Failed to flush stdout");
             thread::sleep(spinner_interval);
         }
