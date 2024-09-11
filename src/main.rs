@@ -35,24 +35,27 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let response = fetch_prs(&octocrab, &query).await?;
 
-    let pr_list = build_pr_list(&response);
-
-    match select_pr(pr_list) {
-        Some(selected_prs) if !selected_prs.is_empty() => {
-            for pr in selected_prs {
-                let url = pr.url.as_str();
-                if !url.is_empty() {
-                    if let Err(e) = webbrowser::open(url) {
-                        eprintln!("Failed to open URL: {}", e);
+    match build_pr_list(&response) {
+        Ok(pr_list) => match select_pr(pr_list) {
+            Some(selected_prs) if !selected_prs.is_empty() => {
+                for pr in selected_prs {
+                    let url = pr.url.as_str();
+                    if !url.is_empty() {
+                        if let Err(e) = webbrowser::open(url) {
+                            eprintln!("Failed to open URL: {}", e);
+                        }
                     }
                 }
             }
-        }
-        Some(_) => {
-            println!("No PR selected.");
-        }
-        None => {
-            println!("Action aborted, no PR selected.");
+            Some(_) => {
+                println!("No PR selected.");
+            }
+            None => {
+                println!("Action aborted, no PR selected.");
+            }
+        },
+        Err(e) => {
+            eprintln!("Error building PR list: {}", e);
         }
     }
 
