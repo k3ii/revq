@@ -7,32 +7,61 @@ pub fn build_query(
     if use_org {
         match &config.organization_settings.organization {
             Some(org) => {
-                let base_query = format!(
-                    r#"
-                    {{
-                        search(query: "is:pr is:open author:@me user:{org}", type: ISSUE, first: 100) {{
-                            edges {{
-                                node {{
-                                    ... on PullRequest {{
-                                        title
-                                        url
-                                        repository {{
-                                            nameWithOwner
+                // Check if the username is supplied along with the org flag
+                if let Some(user) = username {
+                    let query_with_user_and_org = format!(
+                        r#"
+                        {{
+                            search(query: "is:pr is:open author:{user} user:{org} archived:false", type: ISSUE, first: 100) {{
+                                edges {{
+                                    node {{
+                                        ... on PullRequest {{
+                                            title
+                                            url
+                                            repository {{
+                                                nameWithOwner
+                                            }}
                                         }}
                                     }}
                                 }}
                             }}
                         }}
-                    }}
-                    "#,
-                    org = org
-                );
+                        "#,
+                        user = user,
+                        org = org
+                    );
 
-                if use_req {
-                    format!(
+                    if use_req {
+                        format!(
+                            r#"
+                            {{
+                                search(query: "is:pr is:open review-requested:{user} user:{org} archived:false", type: ISSUE, first: 100) {{
+                                    edges {{
+                                        node {{
+                                            ... on PullRequest {{
+                                                title
+                                                url
+                                                repository {{
+                                                    nameWithOwner
+                                                }}
+                                            }}
+                                        }}
+                                    }}
+                                }}
+                            }}
+                            "#,
+                            user = user,
+                            org = org
+                        )
+                    } else {
+                        query_with_user_and_org
+                    }
+                } else {
+                    // If username isn't supplied, use only org-related query
+                    let base_query = format!(
                         r#"
                         {{
-                            search(query: "is:pr is:open review-requested:@me user:{org}", type: ISSUE, first: 100) {{
+                            search(query: "is:pr is:open author:@me user:{org} archived:false", type: ISSUE, first: 100) {{
                                 edges {{
                                     node {{
                                         ... on PullRequest {{
@@ -48,9 +77,32 @@ pub fn build_query(
                         }}
                         "#,
                         org = org
-                    )
-                } else {
-                    base_query
+                    );
+
+                    if use_req {
+                        format!(
+                            r#"
+                            {{
+                                search(query: "is:pr is:open review-requested:@me user:{org} archived:false", type: ISSUE, first: 100) {{
+                                    edges {{
+                                        node {{
+                                            ... on PullRequest {{
+                                                title
+                                                url
+                                                repository {{
+                                                    nameWithOwner
+                                                }}
+                                            }}
+                                        }}
+                                    }}
+                                }}
+                            }}
+                            "#,
+                            org = org
+                        )
+                    } else {
+                        base_query
+                    }
                 }
             }
             None => "Organization not specified in config".to_string(),
@@ -61,7 +113,7 @@ pub fn build_query(
                 let base_query = format!(
                     r#"
                     {{
-                        search(query: "is:pr is:open author:{user}", type: ISSUE, first: 100) {{
+                        search(query: "is:pr is:open author:{user} archived:false", type: ISSUE, first: 100) {{
                             edges {{
                                 node {{
                                     ... on PullRequest {{
@@ -83,7 +135,7 @@ pub fn build_query(
                     format!(
                         r#"
                         {{
-                            search(query: "is:pr is:open review-requested:@me author:{user}", type: ISSUE, first: 100) {{
+                            search(query: "is:pr is:open review-requested:@me author:{user} archived:false", type: ISSUE, first: 100) {{
                                 edges {{
                                     node {{
                                         ... on PullRequest {{
@@ -108,7 +160,7 @@ pub fn build_query(
                 let base_query = format!(
                     r#"
                     {{
-                        search(query: "is:pr is:open author:{username}", type: ISSUE, first: 100) {{
+                        search(query: "is:pr is:open author:{username} user:{username} archived:false", type: ISSUE, first: 100) {{
                             edges {{
                                 node {{
                                     ... on PullRequest {{
