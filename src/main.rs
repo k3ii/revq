@@ -18,8 +18,17 @@ use webbrowser;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let matches = cli::cli().get_matches();
     if matches.subcommand_matches("init").is_some() {
-        init();
-        exit(0);
+        match init() {
+            Ok(_) => {
+                println!("Initialization completed successfully.");
+                exit(0);
+            }
+            Err(e) => {
+                eprintln!("Error during initialization: {}", e);
+                eprintln!("Initialization failed. Please try again.");
+                exit(1);
+            }
+        }
     }
     let config = Config::load().expect("Failed to load config");
 
