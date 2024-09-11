@@ -18,8 +18,17 @@ use webbrowser;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let matches = cli::cli().get_matches();
     if matches.subcommand_matches("init").is_some() {
-        init();
-        exit(0);
+        match init() {
+            Ok(_) => {
+                println!("Initialization completed successfully.");
+                exit(0);
+            }
+            Err(e) => {
+                eprintln!("Error during initialization: {}", e);
+                eprintln!("Initialization failed. Please try again.");
+                exit(1);
+            }
+        }
     }
     let config = Config::load().expect("Failed to load config");
 
@@ -35,24 +44,27 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let response = fetch_prs(&octocrab, &query).await?;
 
-    let pr_list = build_pr_list(&response);
-
-    match select_pr(pr_list) {
-        Some(selected_prs) if !selected_prs.is_empty() => {
-            for pr in selected_prs {
-                let url = pr.url.as_str();
-                if !url.is_empty() {
-                    if let Err(e) = webbrowser::open(url) {
-                        eprintln!("Failed to open URL: {}", e);
+    match build_pr_list(&response) {
+        Ok(pr_list) => match select_pr(pr_list) {
+            Some(selected_prs) if !selected_prs.is_empty() => {
+                for pr in selected_prs {
+                    let url = pr.url.as_str();
+                    if !url.is_empty() {
+                        if let Err(e) = webbrowser::open(url) {
+                            eprintln!("Failed to open URL: {}", e);
+                        }
                     }
                 }
             }
-        }
-        Some(_) => {
-            println!("No PR selected.");
-        }
-        None => {
-            println!("Action aborted, no PR selected.");
+            Some(_) => {
+                println!("No PR selected.");
+            }
+            None => {
+                println!("Action aborted, no PR selected.");
+            }
+        },
+        Err(e) => {
+            eprintln!("Error building PR list: {}", e);
         }
     }
 
