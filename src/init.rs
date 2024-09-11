@@ -1,113 +1,97 @@
+use anyhow::{Context, Result};
 use directories::BaseDirs;
-use inquire::Text;
+use inquire::{Confirm, Text};
 use serde::Serialize;
 use std::fs;
 use std::io::Write;
 use std::path::PathBuf;
-use std::thread::sleep;
+use std::thread;
 use std::time::Duration;
 use toml;
 
 #[derive(Serialize)]
 struct OrgSet {
     org: Option<String>,
-    set_always: bool,
+    always: bool,
 }
 
 #[derive(Serialize)]
 struct UserInfo {
     username: String,
     token: String,
-    org_set: Option<OrgSet>,
+    organization_settings: Option<OrgSet>,
 }
 
-fn save_to_xdg_config(content: &str) -> std::io::Result<PathBuf> {
+fn show_spinner() {
     let spinner_chars = ["⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷"];
     let spinner_interval = Duration::from_millis(50);
 
-    // Function to display spinner
-    fn show_spinner(spinner_chars: &[&str], interval: Duration) {
-        for _ in 0..3 {
-            // Adjust the range for the spinner duration
-            for &char in spinner_chars {
-                print!("\r{}", char);
-                std::io::stdout().flush().expect("Failed to flush stdout");
-                sleep(interval);
-            }
+    for _ in 0..3 {
+        for &char in &spinner_chars {
+            print!("\r{}", char);
+            std::io::stdout().flush().expect("Failed to flush stdout");
+            thread::sleep(spinner_interval);
         }
     }
-
-    // Show the spinner in a separate thread
-    let spinner_handle = std::thread::spawn(move || {
-        show_spinner(&spinner_chars, spinner_interval);
-    });
-
-    if let Some(base_dirs) = BaseDirs::new() {
-        let config_dir = base_dirs.config_dir().join("revq");
-
-        fs::create_dir_all(&config_dir)?;
-        let config_file = config_dir.join("config.toml");
-        fs::write(&config_file, content)?;
-        spinner_handle.join().expect("Spinner thread panicked");
-        return Ok(config_file);
-    }
-    Err(std::io::Error::new(
-        std::io::ErrorKind::NotFound,
-        "Base directory not found",
-    ))
 }
 
-pub fn init() {
-    let username = Text::new("Please enter your GitHub username;")
-        .prompt()
-        .expect("Failed to get the username");
+fn save_to_xdg_config(content: &str) -> Result<PathBuf> {
+    let spinner_handle = thread::spawn(show_spinner);
 
-    let token = Text::new("Please enter your Github token;")
-        .prompt()
-        .expect("Failed to get the token");
+    let base_dirs = BaseDirs::new().context("Failed to get base directories")?;
+    let config_dir = base_dirs.config_dir().join("revq");
 
-    let org_input = Text::new("Enter your Github organization name (optional).")
+    fs::create_dir_all(&config_dir).context("Failed to create config directory")?;
+    let config_file = config_dir.join("config.toml");
+    fs::write(&config_file, content).context("Failed to write config file")?;
+
+    spinner_handle.join().expect("Spinner thread panicked");
+
+    Ok(config_file)
+}
+
+fn prompt_for_user_info() -> Result<UserInfo> {
+    let username = Text::new("Please enter your GitHub username:")
+        .prompt()
+        .context("Failed to get the username")?;
+
+    let token = Text::new("Please enter your Github token:")
+        .prompt()
+        .context("Failed to get the token")?;
+
+    let org_input = Text::new("Enter your Github organization name (optional):")
         .prompt_skippable()
-        .expect("Failed to get the organization");
+        .context("Failed to get the organization")?;
 
-    // Convert empty string to None for organization
-    let org = if let Some(org_value) = org_input {
-        if org_value.is_empty() {
-            None
-        } else {
-            Some(org_value)
-        }
+    let org = org_input.filter(|s| !s.is_empty());
+
+    let organization_settings = if org.is_some() {
+        let always = Confirm::new("Do you want to always use the organization context by default?")
+            .with_default(false)
+            .prompt()
+            .context("Error while prompting for always use org setting")?;
+
+        Some(OrgSet { org, always })
     } else {
         None
     };
 
-    let mut org_set = None;
-
-    // If an organization is provided, prompt for whether to include a set_always
-    let set_always = if org.is_some() {
-        let set_always_input = Text::new("Include set_always information? (yes/no)")
-            .prompt()
-            .expect("Failed to get the set_always information");
-        set_always_input.to_lowercase() == "yes" // Convert to boolean
-    } else {
-        false // Default to false if no organization is provided
-    };
-
-    // Only create org_set if either org or set_always is provided
-    if org.is_some() || set_always {
-        org_set = Some(OrgSet { org, set_always });
-    }
-
-    // Create an instance of UserInfo
-    let user_info = UserInfo {
+    Ok(UserInfo {
         username,
         token,
-        org_set,
-    };
+        organization_settings,
+    })
+}
 
-    let toml_output = toml::to_string(&user_info).expect("Failed to serialize to TOML");
+pub fn init() -> Result<()> {
+    let user_info = prompt_for_user_info()?;
+
+    let toml_output = toml::to_string(&user_info).context("Failed to serialize to TOML")?;
+
     match save_to_xdg_config(&toml_output) {
         Ok(path) => println!("\rConfiguration saved to: {}", path.display()),
         Err(e) => eprintln!("Failed to save configuration: {}", e),
     }
+
+    Ok(())
 }
