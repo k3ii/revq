@@ -3,12 +3,33 @@ pub fn build_query(
     config: &crate::config::Config,
     use_org: bool,
     use_req: bool,
+    show_all: bool,
 ) -> String {
     if use_org {
         match &config.organization_settings.organization {
             Some(org) => {
-                // Check if the username is supplied along with the org flag
-                if let Some(user) = username {
+                if show_all {
+                    format!(
+                        r#"
+                        {{
+                            search(query: "is:pr is:open user:{org} archived:false", type: ISSUE, first: 100) {{
+                                edges {{
+                                    node {{
+                                        ... on PullRequest {{
+                                            title
+                                            url
+                                            repository {{
+                                                nameWithOwner
+                                            }}
+                                        }}
+                                    }}
+                                }}
+                            }}
+                        }}
+                        "#,
+                        org = org
+                    )
+                } else if let Some(user) = username {
                     let query_with_user_and_org = format!(
                         r#"
                         {{
@@ -57,7 +78,6 @@ pub fn build_query(
                         query_with_user_and_org
                     }
                 } else {
-                    // If username isn't supplied, use only org-related query
                     let base_query = format!(
                         r#"
                         {{
