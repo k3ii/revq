@@ -23,7 +23,7 @@ struct UserInfo {
     organization_settings: Option<OrgSet>,
 }
 
-fn show_spinner() {
+pub fn show_spinner() {
     let spinner_chars = ["⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷"];
     let spinner_interval = Duration::from_millis(50);
 
