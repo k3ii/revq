@@ -2,6 +2,7 @@ use anyhow::{Context, Result};
 use colored::*;
 use directories::BaseDirs;
 use inquire::{Confirm, Text};
+use octocrab::models::orgs::Organization;
 use serde::Serialize;
 use std::fs;
 use std::io::Write;
@@ -12,7 +13,7 @@ use toml;
 
 #[derive(Serialize)]
 struct OrgSet {
-    org: Option<String>,
+    organization: Option<String>,
     always: bool,
 }
 
@@ -64,15 +65,18 @@ fn prompt_for_user_info() -> Result<UserInfo> {
         .prompt_skippable()
         .context("Failed to get the organization")?;
 
-    let org = org_input.filter(|s| !s.is_empty());
+    let organization = org_input.filter(|s| !s.is_empty());
 
-    let organization_settings = if org.is_some() {
+    let organization_settings = if organization.is_some() {
         let always = Confirm::new("Do you want to always use the organization context by default?")
             .with_default(false)
             .prompt()
             .context("Error while prompting for always use org setting")?;
 
-        Some(OrgSet { org, always })
+        Some(OrgSet {
+            organization,
+            always,
+        })
     } else {
         None
     };
