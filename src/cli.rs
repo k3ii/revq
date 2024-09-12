@@ -1,5 +1,5 @@
 use clap::builder::styling;
-use clap::{Arg, Command};
+use clap::{Arg, ArgGroup, Command};
 
 const STYLES: styling::Styles = styling::Styles::styled()
     .header(styling::AnsiColor::Green.on_default().bold())
@@ -33,6 +33,18 @@ pub fn cli() -> Command {
                 .aliases(["review", "requested", "review-requested"])
                 .help("Show PRs where review is requested")
                 .action(clap::ArgAction::SetTrue),
+        )
+        .arg(
+            Arg::new("all")
+                .long("all")
+                .requires("org")
+                .help("Show all PRs for organization (only works with --org)")
+                .action(clap::ArgAction::SetTrue),
+        )
+        .group(
+            ArgGroup::new("pr_filter")
+                .args(["req", "all"])
+                .multiple(false),
         )
         .subcommand(
             Command::new("init")

@@ -35,8 +35,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let username = matches.get_one::<String>("username").map(|s| s.as_str());
     let use_org = matches.get_flag("org") || config.organization_settings.always;
     let use_req = matches.get_flag("req");
+    let show_all = matches.get_flag("all");
 
-    let query = build_query(username, &config, use_org, use_req);
+    let query = build_query(username, &config, use_org, use_req, show_all);
 
     let octocrab = Octocrab::builder()
         .personal_token(config.token.clone())
