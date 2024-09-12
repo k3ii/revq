@@ -2,7 +2,6 @@ use anyhow::{Context, Result};
 use colored::*;
 use directories::BaseDirs;
 use inquire::{Confirm, Text};
-use octocrab::models::orgs::Organization;
 use serde::Serialize;
 use std::fs;
 use std::io::Write;
