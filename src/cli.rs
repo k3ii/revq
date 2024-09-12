@@ -49,6 +49,21 @@ pub fn cli() -> Command {
         .subcommand(
             Command::new("init")
                 .about("Initialize configuration file")
-                .after_help("revq init should run only once."),
+                .arg(
+                    Arg::new("force")
+                    .long("force")
+                    .help("Overwrite existing configuration file")
+                    .action(clap::ArgAction::SetTrue)
+                )
+                .after_help(
+                    "The 'init' subcommand creates a new configuration file for revq. \
+                    It will prompt you for your GitHub username, personal access token, \
+                    and optional organization settings.\n\n\
+                    Usage:\n\
+                    - First-time setup: 'revq init'\n\
+                    - Recreate config:   'revq init --force'\n\n\
+                    Note: Running 'revq init' without --force will not overwrite an existing config. \
+                    Use --force with caution as it will replace your current configuration."
+                ),
         )
 }
