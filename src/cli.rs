@@ -34,6 +34,13 @@ pub fn cli() -> Command {
                 .help("Show PRs where review is requested")
                 .action(clap::ArgAction::SetTrue),
         )
+        .arg(
+            Arg::new("all")
+                .long("all")
+                .requires("org")
+                .help("Show all PRs for organization (only works with --org)")
+                .action(clap::ArgAction::SetTrue),
+        )
         .subcommand(
             Command::new("init")
                 .about("Initialize configuration file")
