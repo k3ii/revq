@@ -72,15 +72,26 @@ fn prompt_for_user_info() -> Result<UserInfo> {
     })
 }
 
-pub fn init() -> Result<()> {
+pub fn init(force: bool) -> Result<InitResult> {
+    let base_dirs = BaseDirs::new().context("Failed to get base directories")?;
+    let config_dir = base_dirs.config_dir().join("revq");
+    let config_file = config_dir.join("config.toml");
+
+    if config_file.exists() && !force {
+        return Ok(InitResult::Skipped(config_file));
+    }
+
     let user_info = prompt_for_user_info()?;
 
     let toml_output = toml::to_string(&user_info).context("Failed to serialize to TOML")?;
 
-    match save_to_xdg_config(&toml_output) {
-        Ok(path) => println!("\rConfiguration saved to: {}", path.display()),
-        Err(e) => eprintln!("Failed to save configuration: {}", e),
-    }
+    fs::create_dir_all(&config_dir).context("Failed to create config directory")?;
+    fs::write(&config_file, toml_output).context("Failed to write config file")?;
 
-    Ok(())
+    Ok(InitResult::Completed(config_file))
+}
+
+pub enum InitResult {
+    Completed(PathBuf),
+    Skipped(PathBuf),
 }
