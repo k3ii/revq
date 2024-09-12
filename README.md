@@ -1,22 +1,57 @@
 # revq
+`revq` is a command-line tool to review, search and filter Github pull requests.
 
-## Prerequisite
-1. Install rust
+## Features
+- List pull requests
+- Filter pull requests by author
+- Filter pull requests by organization
+- List pull requests where reviewer is requested
+
+## Usage
+
+Basic usage:
+```bash
+revq
 ```
-curl https://sh.rustup.rs -sSf | sh
+With options: `revq [OPTIONS]`
+
+Options:
+* `-u, --username <USERNAME>`  GitHub username
+* `-o, --org`                  Use organization PRs
+* `-r, --req`                  Show PRs where review is requested
+* `-h, --help`                 Print help
+* `-V, --version`              Print version
+
+## Getting Started
+### Installation
+Install `revq` using cargo:
+```bash
+cargo install revq
+```
+Use brew:
+```bash
+brew tap k3ii/tap/revq
 ```
 
-## Getting started
-1. Clone repository and cd to it.
-```
-git clone https://github.com/k3ii/revq
-```
-2. Install the package via cargo
-```
-cargo install --path .
-```
-3. Initialize revq
-```
+### Configuration
+1. Generate a Github token with repository or content scope.
+
+2. Initalialize `revq` with your Github token:
+```bash
 revq init
 ```
-4. Find bugs =D 
+
+
+
+## Motivation
+`revq` was created to help developers review pull requests in a more efficient way. 
+
+Advantage of `revq` over `gh pr`:
+- `revq` can be run from anywhere in your terminal whereas `gh pr` requires you to be in the repository directory.
+- `revq` allows you to filter pull requests based on author and organization.
+- `revq` is written in Rust.
+
+## Future Work
+[] - Allows filter by mentions
+[] - Allows filter by assignees
+[] - Multiple organizations
