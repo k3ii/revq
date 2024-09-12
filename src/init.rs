@@ -36,21 +36,6 @@ pub fn show_spinner() {
     }
 }
 
-fn save_to_xdg_config(content: &str) -> Result<PathBuf> {
-    let spinner_handle = thread::spawn(show_spinner);
-
-    let base_dirs = BaseDirs::new().context("Failed to get base directories")?;
-    let config_dir = base_dirs.config_dir().join("revq");
-
-    fs::create_dir_all(&config_dir).context("Failed to create config directory")?;
-    let config_file = config_dir.join("config.toml");
-    fs::write(&config_file, content).context("Failed to write config file")?;
-
-    spinner_handle.join().expect("Spinner thread panicked");
-
-    Ok(config_file)
-}
-
 fn prompt_for_user_info() -> Result<UserInfo> {
     let username = Text::new("Please enter your GitHub username:")
         .prompt()
