@@ -1,5 +1,3 @@
-# configuration for https://github.com/orhun/git-cliff
-
 [changelog]
 # changelog header
 header = """

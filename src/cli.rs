@@ -10,6 +10,8 @@ const STYLES: styling::Styles = styling::Styles::styled()
 pub fn cli() -> Command {
     Command::new("revq")
         .version("0.1.0")
+        .author("Jain Ramchurn")
+        .about("Review and query your pull requests")
         .styles(STYLES)
         .arg(
             Arg::new("username")
