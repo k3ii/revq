@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.1](https://github.com/k3ii/revq/compare/0.1.0..0.1.1) - 2024-09-15
+
+### 📚 Documentation
+
+- Specify PAT in README - ([56f4c28](https://github.com/k3ii/revq/commit/56f4c283ae631afd85a470e432d3953b066fcbed))
+- Add gif to readme - ([c0e9d30](https://github.com/k3ii/revq/commit/c0e9d303d01c2c3b6d179fc81baa1beed3e47761))
+
+### ⚙️ Miscellaneous Tasks
+
+- *(ci)* Generate windows pre-built binary - ([09688b8](https://github.com/k3ii/revq/commit/09688b8f6a3d3ff3bb412f4faa9e8585fdbe1e97))
+- Add assets - ([42694d1](https://github.com/k3ii/revq/commit/42694d10dcd0f6f283c8dd780901af3afed05a23))
+
 ## [0.1.0] - 2024-09-12
 
 ### 📇 Features

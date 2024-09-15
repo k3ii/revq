@@ -1,6 +1,6 @@
 [package]
 name = "revq"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Jain Ramchurn"]
 description = "Review and query your pull requests"
