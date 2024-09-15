@@ -103,7 +103,7 @@ revq -o --all
 
 To get started with `revq`, follow these steps:
 
-1. Generate a GitHub token with repository or content scope.
+1. Generate a GitHub Personal access tokens (Fine-grained token) with Content permission having Read-only access.
 2. Initialize `revq` with your GitHub token:
 
 ```bash
