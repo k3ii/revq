@@ -2,6 +2,8 @@
 
 `revq` is a command-line tool designed to streamline the process of reviewing, searching, and filtering GitHub pull requests.
 
+![demo](./assets/demo.gif)
+
 ## Table of Contents
 
 - [Features](#features)
