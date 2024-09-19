@@ -68,4 +68,14 @@ pub fn cli() -> Command {
                     Use --force with caution as it will replace your current configuration."
                 ),
         )
+        .subcommand(
+            Command::new("switch")
+                .about("Switch between organizations")
+                .arg(
+                    Arg::new("org")
+                        .help("Organization name to switch to, 'default' for default org, or '-' to toggle")
+                        .required(true)
+                        .index(1)
+                )
+        )
 }
