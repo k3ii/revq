@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.2](https://github.com/k3ii/revq/compare/0.1.1..0.1.2) - 2025-01-03
+
+### 📚 Documentation
+
+- *(readme)* Add instructions for installing from the AUR - ([29e42a5](https://github.com/k3ii/revq/commit/29e42a577214de0c397dc01e5d2fd20b19314ffd))
+
 ## [0.1.1](https://github.com/k3ii/revq/compare/0.1.0..0.1.1) - 2024-09-15
 
 ### 📚 Documentation
