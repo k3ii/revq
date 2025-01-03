@@ -45,6 +45,14 @@ brew install k3ii/tap/revq
 ```
 Check the release page to install the pre-built binaries.
 
+#### Arch Linux
+
+On Arch Linux, you can install `revq` using the [AUR package](https://aur.archlinux.org/packages/revq):
+
+```bash
+paru -S revq
+```
+
 ## Usage
 
 The general syntax for using `revq` is:
