@@ -7,12 +7,10 @@ mod query;
 
 use crate::config::Config;
 use crate::github::fetch_prs;
-use crate::init::{init, show_spinner, InitResult};
+use crate::init::{init, InitResult};
 use crate::pr::{build_pr_list, select_pr};
 use crate::query::build_query;
 use octocrab::Octocrab;
-use std::process::exit;
-use std::thread;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -22,29 +20,40 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let force = init_matches.get_flag("force");
         match init(force) {
             Ok(InitResult::Completed(path)) => {
-                let spinner_handle = thread::spawn(show_spinner);
-                spinner_handle.join().expect("Spinner thread panicked");
-                println!("\rInitialization completed successfully.");
+                println!("Initialization completed successfully.");
                 println!("Configuration saved to: {}", path.display());
-                exit(0);
+                return Ok(());
             }
             Ok(InitResult::Skipped(path)) => {
                 println!("Configuration file already exists at: {}", path.display());
                 println!("Use 'revq init --force' to overwrite the existing configuration.");
-                exit(0);
+                return Ok(());
             }
             Err(e) => {
                 eprintln!("Error during initialization: {}", e);
                 eprintln!("Initialization failed. Please try again.");
-                exit(1);
+                std::process::exit(1);
             }
         }
+    } else if let Some(switch_matches) = matches.subcommand_matches("switch") {
+        let org = switch_matches.get_one::<String>("org").unwrap();
+        let mut config = Config::load()?;
+        config.switch_org(org)?;
+        println!(
+            "Switched to organization: {}",
+            config.current_org.as_deref().unwrap_or("default")
+        );
+        return Ok(());
     }
 
     let config = Config::load().expect("Failed to load config");
 
     let username = matches.get_one::<String>("username").map(|s| s.as_str());
-    let use_org = matches.get_flag("org") || config.organization_settings.always;
+    //let use_org = matches.get_flag("org") || config.organizations.iter().any(|o| o.always);
+    let use_org = matches.get_flag("org")
+        || config.default_org.as_ref().map_or(false, |default_org| {
+            config.organizations.iter().any(|o| o.name == *default_org)
+        });
     let use_req = matches.get_flag("req");
     let show_all = matches.get_flag("all");
 

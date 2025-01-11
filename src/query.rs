@@ -1,12 +1,17 @@
 pub fn build_query(
     username: Option<&str>,
-    config: &crate::config::Config,
+    config: &crate::Config,
     use_org: bool,
     use_req: bool,
     show_all: bool,
 ) -> String {
     if use_org {
-        match &config.organization_settings.organization {
+        let org = config
+            .current_org
+            .as_deref()
+            .or(config.default_org.as_deref())
+            .or_else(|| config.organizations.first().map(|o| o.name.as_str()));
+        match org {
             Some(org) => {
                 if show_all {
                     format!(
